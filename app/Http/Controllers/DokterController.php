@@ -10,9 +10,22 @@ use Illuminate\Support\Facades\DB;
 
 class DokterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $dokter = Dokter::with('user')->orderBy('created_at', 'desc')->get();
+        $query = Dokter::with('user')->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama_dokter', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('spesialisasi', 'LIKE', "%{$searchTerm}%")
+                  ->orWhereHas('user', function ($qUser) use ($searchTerm) {
+                      $qUser->where('username', 'LIKE', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $dokter = $query->paginate(10)->withQueryString();
         return view('dokter.index', compact('dokter'));
     }
 

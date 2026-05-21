@@ -10,10 +10,23 @@ use Illuminate\Support\Facades\DB;
 
 class PasienController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Load data pasien beserta data user-nya (akun loginnya)
-        $pasien = Pasien::with('user')->orderBy('created_at', 'desc')->get();
+        $query = Pasien::with('user')->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('no_rekam_medis', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('nama_lengkap', 'LIKE', "%{$searchTerm}%")
+                  ->orWhereHas('user', function ($qUser) use ($searchTerm) {
+                      $qUser->where('username', 'LIKE', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $pasien = $query->paginate(10)->withQueryString();
         return view('pasien.index', compact('pasien'));
     }
 

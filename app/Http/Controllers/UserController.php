@@ -13,9 +13,19 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $query = User::orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('username', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('role', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $users = $query->paginate(10)->withQueryString();
         return view('users.index', compact('users'));
     }
 

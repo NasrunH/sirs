@@ -3,11 +3,22 @@
 
 @section('content')
 <div class="bg-card border border-bordercolor rounded-lg shadow-sm">
-    <div class="p-5 border-b border-bordercolor flex justify-between items-center bg-mainbg rounded-t-lg">
-        <h3 class="text-lg font-bold text-title">Daftar Akun Pengguna</h3>
-        <button onclick="openModal('modalTambahUser')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded shadow-sm text-sm font-bold transition">
-            + Tambah User Terpadu
-        </button>
+    <div class="p-5 border-b border-bordercolor bg-mainbg rounded-t-lg">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-bold text-title">Daftar Akun Pengguna</h3>
+                <p class="text-sm text-textsec mt-1">Cari user berdasarkan username atau role.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <form action="{{ route('users.index') }}" method="GET" class="flex w-full sm:w-auto gap-2">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari user..." class="w-full sm:w-72 border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary text-sm" />
+                    <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded text-sm font-semibold">Cari</button>
+                </form>
+                <button onclick="openModal('modalTambahUser')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded shadow-sm text-sm font-bold transition">
+                    + Tambah User Terpadu
+                </button>
+            </div>
+        </div>
     </div>
     
     <div class="overflow-x-auto p-4">
@@ -84,6 +95,10 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="px-4 py-3 border-t border-bordercolor bg-mainbg flex flex-col md:flex-row items-center justify-between gap-3 text-sm">
+        <div class="text-textsec">Menampilkan {{ $users->firstItem() ?? 0 }} sampai {{ $users->lastItem() ?? 0 }} dari {{ $users->total() }} user</div>
+        <div class="mt-2 md:mt-0">{{ $users->links() }}</div>
     </div>
 </div>
 

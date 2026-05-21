@@ -8,9 +8,20 @@ use Illuminate\Http\Request;
 class ObatController extends Controller
 {
     // 1. Tampilkan Semua Data & Halaman Utama
-    public function index()
+    public function index(Request $request)
     {
-        $obat = Obat::orderBy('created_at', 'desc')->get();
+        $query = Obat::orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('kode_obat', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('nama_obat', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('kategori', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $obat = $query->paginate(10)->withQueryString();
         return view('obat.index', compact('obat'));
     }
 

@@ -3,11 +3,22 @@
 
 @section('content')
 <div class="bg-card border border-bordercolor rounded-lg shadow-sm">
-    <div class="p-5 border-b border-bordercolor flex justify-between items-center bg-mainbg rounded-t-lg">
-        <h3 class="text-lg font-bold text-title">Daftar Dokter Bertugas</h3>
-        <button onclick="openModal('modalTambahDokter')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded shadow-sm text-sm font-bold transition">
-            + Tambah Dokter & Akun
-        </button>
+    <div class="p-5 border-b border-bordercolor bg-mainbg rounded-t-lg">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-bold text-title">Daftar Dokter Bertugas</h3>
+                <p class="text-sm text-textsec mt-1">Cari dokter berdasarkan nama, spesialisasi, atau username.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <form action="{{ route('dokter.index') }}" method="GET" class="flex w-full sm:w-auto gap-2">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari dokter..." class="w-full sm:w-64 border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary text-sm" />
+                    <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded text-sm font-semibold">Cari</button>
+                </form>
+                <button onclick="openModal('modalTambahDokter')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded shadow-sm text-sm font-bold transition">
+                    + Tambah Dokter & Akun
+                </button>
+            </div>
+        </div>
     </div>
     
     <div class="overflow-x-auto p-4">
@@ -89,6 +100,10 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="px-4 py-3 border-t border-bordercolor bg-mainbg flex flex-col md:flex-row items-center justify-between gap-3 text-sm">
+        <div class="text-textsec">Menampilkan {{ $dokter->firstItem() ?? 0 }} sampai {{ $dokter->lastItem() ?? 0 }} dari {{ $dokter->total() }} dokter</div>
+        <div class="mt-2 md:mt-0">{{ $dokter->links() }}</div>
     </div>
 </div>
 
