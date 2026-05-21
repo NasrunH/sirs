@@ -42,6 +42,7 @@
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold" {{ Auth::id() == $item->id_user ? 'disabled' : '' }}>Hapus</button>
                         </form>
+                        <a href="{{ route('users.show', $item->id_user) }}" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Detail</a>
                     </td>
                 </tr>
 

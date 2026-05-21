@@ -46,6 +46,12 @@ class ObatController extends Controller
         return redirect()->route('obat.index')->with('success', 'Data Obat berhasil diperbarui!');
     }
 
+    public function show($id)
+    {
+        $obat = Obat::findOrFail($id);
+        return view('obat.show', compact('obat'));
+    }
+
     // 4. Hapus Data
     public function destroy($id)
     {

@@ -32,6 +32,8 @@
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Hapus</button>
                         </form>
+                        <!-- Tambahkan tombol ini di dalam tag <td> Aksi pada semua index.blade.php -->
+                        <a href="{{ route('dokter.show', $item->id_dokter) }}" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Detail</a>
                     </td>
                 </tr>
 

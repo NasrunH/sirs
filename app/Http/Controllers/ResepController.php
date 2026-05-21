@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\DB;
 class ResepController extends Controller
 {
     // 1. DAFTAR RESEP (Admin melihat semua, Dokter melihat miliknya saja)
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        
+        // Memulai query dengan eager loading
         $query = Resep::with(['pasien', 'dokter', 'pengelola'])->orderBy('created_at', 'desc');
 
         // Jika dokter, filter hanya resep yang dia buat
@@ -24,6 +26,30 @@ class ResepController extends Controller
             if(!$user->dokter) return back()->with('error', 'Profil Dokter belum lengkap!');
             $query->where('id_dokter', $user->dokter->id_dokter);
         }
+
+        // ==========================================
+        // LOGIKA PENCARIAN (SEARCH)
+        // ==========================================
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            
+            $query->where(function($q) use ($searchTerm) {
+                // 1. Cari berdasarkan tanggal resep
+                $q->where('tanggal_resep', 'LIKE', "%{$searchTerm}%")
+                  
+                  // 2. Atau cari di dalam relasi tabel pasien (Nama & RM)
+                  ->orWhereHas('pasien', function($qPasien) use ($searchTerm) {
+                      $qPasien->where('nama_lengkap', 'LIKE', "%{$searchTerm}%")
+                              ->orWhere('no_rekam_medis', 'LIKE', "%{$searchTerm}%");
+                  })
+                  
+                  // 3. Atau cari di dalam relasi tabel dokter (Nama)
+                  ->orWhereHas('dokter', function($qDokter) use ($searchTerm) {
+                      $qDokter->where('nama_dokter', 'LIKE', "%{$searchTerm}%");
+                  });
+            });
+        }
+        // ==========================================
 
         $resep = $query->get();
         return view('resep.index', compact('resep'));

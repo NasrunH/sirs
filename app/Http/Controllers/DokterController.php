@@ -81,6 +81,11 @@ class DokterController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $dokter = Dokter::with('user')->findOrFail($id);
+        return view('dokter.show', compact('dokter'));
+    }
     public function destroy($id)
     {
         $dokter = Dokter::findOrFail($id);

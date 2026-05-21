@@ -14,7 +14,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">Pilih Pasien</label>
-                        <select name="id_pasien" class="w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary bg-mainbg" required>
+                        <select name="id_pasien" class="select-searchable w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary bg-mainbg" required>
                             <option value="">-- Cari Pasien --</option>
                             @foreach($pasien as $p)
                                 <option value="{{ $p->id_pasien }}">{{ $p->no_rekam_medis }} - {{ $p->nama_lengkap }}</option>
@@ -25,7 +25,7 @@
                     @if(Auth::user()->role === 'admin')
                         <div>
                             <label class="block text-sm font-semibold mb-1">Dokter Pemeriksa</label>
-                            <select name="id_dokter" class="w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary bg-mainbg" required>
+                            <select name="id_dokter" class="select-searchable w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary bg-mainbg" required>
                                 <option value="">-- Pilih Dokter --</option>
                                 @foreach($dokter as $d)
                                     <option value="{{ $d->id_dokter }}">{{ $d->nama_dokter }} ({{ $d->spesialisasi }})</option>
@@ -75,7 +75,7 @@
                             <!-- Baris 1 Default -->
                             <tr class="baris-obat border-b border-bordercolor/50">
                                 <td class="py-2 pr-2">
-                                    <select name="obat[0][id_obat]" class="select-obat w-full border border-bordercolor rounded px-2 py-1.5 text-sm focus:ring-primary" onchange="hitungSubtotal(this)" required>
+                                    <select name="obat[0][id_obat]" class="select-searchable select-obat w-full border border-bordercolor rounded px-2 py-1.5 text-sm focus:ring-primary" onchange="hitungSubtotal(this)" required>
                                         <option value="" data-harga="0">-- Pilih Obat --</option>
                                         @foreach($obat as $o)
                                             <!-- Menyisipkan data harga di atribut data-harga -->
@@ -124,7 +124,7 @@
     <tbody id="templateBaris">
         <tr class="baris-obat border-b border-bordercolor/50">
             <td class="py-2 pr-2">
-                <select name="obat[INDEX][id_obat]" class="select-obat w-full border border-bordercolor rounded px-2 py-1.5 text-sm focus:ring-primary" onchange="hitungSubtotal(this)" required>
+                <select name="obat[INDEX][id_obat]" class="select-searchable select-obat w-full border border-bordercolor rounded px-2 py-1.5 text-sm focus:ring-primary" onchange="hitungSubtotal(this)" required>
                     <option value="" data-harga="0">-- Pilih Obat --</option>
                     @foreach($obat as $o)
                         <option value="{{ $o->id_obat }}" data-harga="{{ $o->harga }}">{{ $o->nama_obat }} (Stok: {{ $o->stok }})</option>
@@ -157,6 +157,7 @@
         let template = document.getElementById('templateBaris').innerHTML;
         let barisBaruHTML = template.replace(/INDEX/g, barisIndex);
         document.getElementById('badanTabel').insertAdjacentHTML('beforeend', barisBaruHTML);
+        initSearchableSelect(document.querySelector('#badanTabel tr:last-child .select-searchable'));
         barisIndex++;
         updateTombolHapus();
     }
@@ -171,6 +172,31 @@
         let daftarBaris = document.querySelectorAll('#badanTabel .baris-obat');
         let tombolPertama = document.querySelector('#badanTabel .baris-obat button');
         tombolPertama.disabled = (daftarBaris.length <= 1);
+    }
+
+    function initSearchableSelect(element) {
+        if (!element || !$(element).length) return;
+
+        $(element).select2({
+            width: '100%',
+            placeholder: '-- Pilih Obat --',
+            allowClear: true,
+            minimumResultsForSearch: 0,
+            dropdownParent: $(element).closest('td')
+        });
+    }
+
+    function initAllSearchableSelects() {
+        document.querySelectorAll('form#formResep .select-searchable').forEach(function(select) {
+            if (!$(select).data('select2')) {
+                $(select).select2({
+                    width: '100%',
+                    placeholder: select.querySelector('option[value=""]').innerText || '-- Pilih --',
+                    allowClear: true,
+                    minimumResultsForSearch: 0
+                });
+            }
+        });
     }
 
     // Fungsi Kalkulasi Harga Dinamis
@@ -210,5 +236,9 @@
 
         document.getElementById('grandTotal').innerText = new Intl.NumberFormat('id-ID').format(grandTotal);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initAllSearchableSelects();
+    });
 </script>
 @endsection

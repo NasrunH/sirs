@@ -34,6 +34,7 @@
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Hapus</button>
                         </form>
+                        <a href="{{ route('pasien.show', $item->id_pasien) }}" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Detail</a>
                     </td>
                 </tr>
 

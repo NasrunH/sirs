@@ -111,6 +111,12 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Kredensial Akun Pengguna berhasil diperbarui!');
     }
 
+    public function show($id)
+    {
+        $user = User::with(['admin', 'dokter', 'pasien'])->findOrFail($id);
+        return view('users.show', compact('user'));
+    }
+
     public function destroy($id)
     {
         if (auth()->id() == $id) {

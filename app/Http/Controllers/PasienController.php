@@ -99,6 +99,12 @@ class PasienController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $pasien = Pasien::with(['user', 'resep.dokter'])->findOrFail($id);
+        return view('pasien.show', compact('pasien'));
+    }
+
     public function destroy($id)
     {
         $pasien = Pasien::findOrFail($id);

@@ -33,12 +33,6 @@
                 <p class="text-xs text-textsec font-bold uppercase">Dokter Pemeriksa</p>
                 <p class="font-bold text-title">{{ $item->dokter->nama_dokter ?? '-' }} <span class="text-xs font-normal text-sidebar bg-accent/30 px-2 py-0.5 rounded-full ml-1">{{ $item->dokter->spesialisasi ?? '' }}</span></p>
             </div>
-            
-            <div>
-                <a href="{{ route('resep.show', $item->id_resep) }}" class="bg-white border-2 border-info text-info hover:bg-info hover:text-white px-4 py-1.5 rounded-full text-xs font-bold transition">
-                    Cetak Nota
-                </a>
-            </div>
         </div>
 
         <!-- Detail Obat & Biaya -->
