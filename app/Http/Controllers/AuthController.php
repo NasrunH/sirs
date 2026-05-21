@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\Pasien;
 
 class AuthController extends Controller
 {
@@ -61,5 +64,73 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
+    }
+
+    public function register()
+    {
+        if (Auth::check()) return redirect()->route('dashboard');
+        return view('auth.register');
+    }
+
+    /**
+     * Memproses data registrasi pasien.
+     */
+    public function processRegister(Request $request)
+    {
+        $request->validate([
+            'username'      => 'required|unique:users,username|max:50|alpha_dash',
+            'password'      => 'required|min:4|confirmed',
+            'nama_lengkap'  => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:L,P',
+            'alamat'        => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'username' => $request->username,
+                'password' => Hash::make($request->password),
+                'role'     => 'pasien', 
+            ]);
+
+            // ==========================================
+            // LOGIKA GENERATE NOMOR RM OTOMATIS
+            // ==========================================
+            $tahunBulan = date('Ym'); // Output: 202605
+            
+            // Cari pasien terakhir yang terdaftar di bulan ini
+            $pasienTerakhir = Pasien::where('no_rekam_medis', 'LIKE', 'RM-'.$tahunBulan.'-%')
+                                    ->orderBy('id_pasien', 'desc')
+                                    ->first();
+            
+            if ($pasienTerakhir) {
+                // Ambil 4 digit terakhir dari RM sebelumnya, lalu tambah 1
+                $nomorTerakhir = (int) substr($pasienTerakhir->no_rekam_medis, -4);
+                $nomorBaru = str_pad($nomorTerakhir + 1, 4, '0', STR_PAD_LEFT);
+            } else {
+                // Jika belum ada pasien di bulan ini, mulai dari 0001
+                $nomorBaru = '0001';
+            }
+            
+            $no_rm = 'RM-' . $tahunBulan . '-' . $nomorBaru;
+            // ==========================================
+
+            Pasien::create([
+                'id_user'        => $user->id_user,
+                'no_rekam_medis' => $no_rm,
+                'nama_lengkap'   => $request->nama_lengkap,
+                'tanggal_lahir'  => $request->tanggal_lahir,
+                'jenis_kelamin'  => $request->jenis_kelamin,
+                'alamat'         => $request->alamat,
+            ]);
+
+            DB::commit();
+            return redirect()->route('login')->with('success', 'Registrasi berhasil! Nomor RM Anda: ' . $no_rm . '. Silakan login.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage())->withInput();
+        }
     }
 }
