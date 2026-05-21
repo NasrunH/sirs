@@ -37,7 +37,7 @@
                     <td class="py-3 px-4 flex justify-center space-x-2">
                         <a href="{{ route('resep.show', $item->id_resep) }}" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Detail / Nota</a>
                         @if(Auth::user()->role == 'admin')
-                            <form action="{{ route('resep.destroy', $item->id_resep) }}" method="POST" onsubmit="return confirm('Hapus resep ini? Stok obat akan dikembalikan secara otomatis.');">
+                            <form action="{{ route('resep.destroy', $item->id_resep) }}" method="POST" class="form-confirm" data-title="Batalkan Resep?" data-message="Resep ini akan dibatalkan dan stok obat akan otomatis dikembalikan ke inventaris." data-confirm-text="Ya, Batalkan Resep!">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Batalkan</button>
                             </form>

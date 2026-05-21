@@ -47,7 +47,7 @@
                         <!-- Tombol Buka Modal Edit Spesifik Row Ini -->
                         <button onclick="openModal('modalEdit{{ $item->id_obat }}')" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Edit</button>
                         
-                        <form action="{{ route('obat.destroy', $item->id_obat) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus obat ini?');">
+                        <form action="{{ route('obat.destroy', $item->id_obat) }}" method="POST" class="form-confirm" data-title="Hapus Obat?" data-message="Obat {{ $item->nama_obat }} akan dihapus dari sistem." data-confirm-text="Ya, Hapus Obat!">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Hapus</button>
                         </form>

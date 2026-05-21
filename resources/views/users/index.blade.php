@@ -38,7 +38,7 @@
                     <td class="py-3 px-4">{{ $item->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3 px-4 flex justify-center space-x-2">
                         <button onclick="openModal('modalEditUser{{ $item->id_user }}')" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Edit Login</button>
-                        <form action="{{ route('users.destroy', $item->id_user) }}" method="POST" onsubmit="return confirm('Menghapus user akan menghilangkan akses login mereka. Lanjutkan?');">
+                        <form action="{{ route('users.destroy', $item->id_user) }}" method="POST" class="form-confirm" data-title="Hapus Hak Akses?" data-message="Menghapus user akan menghilangkan akses login mereka ke dalam sistem. Lanjutkan?" data-confirm-text="Ya, Cabut Akses!">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold" {{ Auth::id() == $item->id_user ? 'disabled' : '' }}>Hapus</button>
                         </form>

@@ -28,7 +28,7 @@
                     <td class="py-3 px-4 text-sm font-semibold">{{ $item->user->username ?? '-' }}</td>
                     <td class="py-3 px-4 flex justify-center space-x-2">
                         <button onclick="openModal('modalEditDokter{{ $item->id_dokter }}')" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Edit</button>
-                        <form action="{{ route('dokter.destroy', $item->id_dokter) }}" method="POST" onsubmit="return confirm('Hapus dokter dan akunnya?');">
+                        <form action="{{ route('dokter.destroy', $item->id_dokter) }}" method="POST" class="form-confirm" data-title="Hapus Dokter?" data-message="Hapus dokter ini beserta akun loginnya? Data tidak dapat dikembalikan." data-confirm-text="Ya, Hapus!">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Hapus</button>
                         </form>

@@ -30,7 +30,7 @@
                     <td class="py-3 px-4">{{ \Carbon\Carbon::parse($item->tanggal_lahir)->format('d M Y') }}</td>
                     <td class="py-3 px-4 flex justify-center space-x-2">
                         <button onclick="openModal('modalEditPasien{{ $item->id_pasien }}')" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Edit</button>
-                        <form action="{{ route('pasien.destroy', $item->id_pasien) }}" method="POST" onsubmit="return confirm('Hapus pasien ini beserta akun loginnya?');">
+                        <form action="{{ route('pasien.destroy', $item->id_pasien) }}" method="POST" class="form-confirm" data-title="Hapus Pasien?" data-message="Hapus data pasien ini beserta akun loginnya secara permanen?" data-confirm-text="Ya, Hapus Pasien!">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Hapus</button>
                         </form>
