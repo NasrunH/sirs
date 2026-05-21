@@ -25,10 +25,46 @@
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="border-b-2 border-bordercolor text-textsec text-sm uppercase">
-                    <th class="py-3 px-4 font-bold">ID</th>
-                    <th class="py-3 px-4 font-bold">Username</th>
-                    <th class="py-3 px-4 font-bold">Role Akses</th>
-                    <th class="py-3 px-4 font-bold">Tgl Dibuat</th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['sort_by' => 'id_user', 'sort_direction' => $currentSort['by'] == 'id_user' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            ID
+                            @if($currentSort['by'] == 'id_user')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['sort_by' => 'username', 'sort_direction' => $currentSort['by'] == 'username' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            Username
+                            @if($currentSort['by'] == 'username')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['sort_by' => 'role', 'sort_direction' => $currentSort['by'] == 'role' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            Role Akses
+                            @if($currentSort['by'] == 'role')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['sort_by' => 'is_active', 'sort_direction' => $currentSort['by'] == 'is_active' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            Status
+                            @if($currentSort['by'] == 'is_active')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['sort_by' => 'created_at', 'sort_direction' => $currentSort['by'] == 'created_at' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            Tgl Dibuat
+                            @if($currentSort['by'] == 'created_at')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
                     <th class="py-3 px-4 font-bold text-center">Aksi</th>
                 </tr>
             </thead>
@@ -46,9 +82,24 @@
                             <span class="bg-info/20 text-info px-2 py-1 rounded-full text-xs font-bold uppercase">Pasien</span>
                         @endif
                     </td>
+                    <td class="py-3 px-4">
+                        @if($item->is_active)
+                            <span class="bg-success/20 text-success px-2 py-1 rounded-full text-xs font-bold">Aktif</span>
+                        @else
+                            <span class="bg-danger/20 text-danger px-2 py-1 rounded-full text-xs font-bold">Nonaktif</span>
+                        @endif
+                    </td>
                     <td class="py-3 px-4">{{ $item->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3 px-4 flex justify-center space-x-2">
                         <button onclick="openModal('modalEditUser{{ $item->id_user }}')" class="bg-info hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold">Edit Login</button>
+                        @if(Auth::id() != $item->id_user)
+                            <form action="{{ route('users.toggle-status', $item->id_user) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="{{ $item->is_active ? 'bg-warning hover:bg-yellow-600' : 'bg-success hover:bg-green-600' }} text-white px-3 py-1.5 rounded text-xs font-semibold">
+                                    {{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                </button>
+                            </form>
+                        @endif
                         <form action="{{ route('users.destroy', $item->id_user) }}" method="POST" class="form-confirm" data-title="Hapus Hak Akses?" data-message="Menghapus user akan menghilangkan akses login mereka ke dalam sistem. Lanjutkan?" data-confirm-text="Ya, Cabut Akses!">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold" {{ Auth::id() == $item->id_user ? 'disabled' : '' }}>Hapus</button>
@@ -91,7 +142,7 @@
                 <!-- END MODAL EDIT -->
 
                 @empty
-                <tr><td colspan="5" class="py-6 text-center text-textsec italic">Belum ada data user.</td></tr>
+                <tr><td colspan="6" class="py-6 text-center text-textsec italic">Belum ada data user.</td></tr>
                 @endforelse
             </tbody>
         </table>

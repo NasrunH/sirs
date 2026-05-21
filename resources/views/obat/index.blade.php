@@ -166,7 +166,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-textmain mb-1">Stok Awal</label>
-                        <input type="number" name="stok" min="0" value="0" class="w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary" required>
+                        <input type="text" name="stok" min="0" value="0" class="w-full border border-bordercolor rounded px-3 py-2 focus:ring-2 focus:ring-primary" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-textmain mb-1">Harga Satuan</label>

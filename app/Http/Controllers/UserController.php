@@ -15,8 +15,9 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::orderBy('created_at', 'desc');
+        $query = User::query();
 
+        // Handle search
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -25,8 +26,26 @@ class UserController extends Controller
             });
         }
 
+        // Handle sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+        
+        // Validate sort column to prevent SQL injection
+        $allowedColumns = ['id_user', 'username', 'role', 'is_active', 'created_at'];
+        if (!in_array($sortBy, $allowedColumns)) {
+            $sortBy = 'created_at';
+        }
+        
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortDirection);
+
         $users = $query->paginate(10)->withQueryString();
-        return view('users.index', compact('users'));
+        $currentSort = ['by' => $sortBy, 'direction' => $sortDirection];
+        
+        return view('users.index', compact('users', 'currentSort'));
     }
 
     public function store(Request $request)
@@ -138,5 +157,19 @@ class UserController extends Controller
         $user->delete();
         
         return redirect()->route('users.index')->with('success', 'Akun Pengguna berhasil dihapus!');
+    }
+
+    public function toggleStatus($id)
+    {
+        if (auth()->id() == $id) {
+            return redirect()->route('users.index')->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri saat sedang login!');
+        }
+
+        $user = User::findOrFail($id);
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return redirect()->route('users.index')->with('success', "Akun pengguna {$user->username} berhasil {$status}!");
     }
 }

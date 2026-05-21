@@ -38,19 +38,29 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        // 2. Coba melakukan login (Auth::attempt akan otomatis mengecek password hash)
+        // 2. Coba melakukan login
         if (Auth::attempt($credentials)) {
-            // 3. Jika berhasil, regenerate session (mencegah session fixation attack)
+            
+            // --- TAMBAHAN: Cek apakah akun aktif ---
+            if (Auth::user()->is_active == 0) {
+                Auth::logout(); // Logout paksa jika tidak aktif
+                return back()->withErrors([
+                    'login_failed' => 'Akun Anda telah dinonaktifkan. Silakan hubungi admin.',
+                ])->onlyInput('username');
+            }
+            // ---------------------------------------
+
+            // 3. Jika berhasil dan aktif, regenerate session
             $request->session()->regenerate();
 
-            // 4. Arahkan user ke halaman dashboard (atau halaman yang mereka tuju sebelum login)
+            // 4. Arahkan user ke halaman dashboard
             return redirect()->intended('dashboard')->with('success', 'Selamat datang kembali, ' . Auth::user()->username . '!');
         }
 
-        // 5. Jika gagal (username/password salah), kembalikan ke halaman login dengan pesan error
+        // 5. Jika gagal (username/password salah)
         return back()->withErrors([
             'login_failed' => 'Username atau password yang Anda masukkan salah.',
-        ])->onlyInput('username'); // Mempertahankan input username agar user tidak perlu mengetik ulang
+        ])->onlyInput('username');
     }
 
     /**

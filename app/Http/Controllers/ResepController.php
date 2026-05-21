@@ -19,7 +19,7 @@ class ResepController extends Controller
         $user = Auth::user();
         
         // Memulai query dengan eager loading
-        $query = Resep::with(['pasien', 'dokter', 'pengelola'])->orderBy('created_at', 'desc');
+        $query = Resep::with(['pasien', 'dokter', 'pengelola']);
 
         // Jika dokter, filter hanya resep yang dia buat
         if ($user->role === 'dokter') {
@@ -51,8 +51,28 @@ class ResepController extends Controller
         }
         // ==========================================
 
+        // ==========================================
+        // LOGIKA SORTING
+        // ==========================================
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+        
+        // Validate sort column to prevent SQL injection
+        $allowedColumns = ['tanggal_resep', 'total_harga', 'created_at'];
+        if (!in_array($sortBy, $allowedColumns)) {
+            $sortBy = 'created_at';
+        }
+        
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+        
+        $query->orderBy($sortBy, $sortDirection);
+        // ==========================================
+
         $resep = $query->get();
-        return view('resep.index', compact('resep'));
+        $currentSort = ['by' => $sortBy, 'direction' => $sortDirection];
+        return view('resep.index', compact('resep', 'currentSort'));
     }
 
     // 2. FORM BUAT RESEP

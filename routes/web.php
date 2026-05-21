@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
+        Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::resource('pasien', PasienController::class);
         Route::resource('dokter', DokterController::class);
         Route::resource('obat', ObatController::class);

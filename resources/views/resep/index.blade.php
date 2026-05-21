@@ -34,10 +34,24 @@
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="border-b-2 border-bordercolor text-textsec text-sm uppercase">
-                    <th class="py-3 px-4 font-bold">Tanggal</th>
+                    <th class="py-3 px-4 font-bold">
+                        <a href="{{ route('resep.index', array_merge(request()->query(), ['sort_by' => 'tanggal_resep', 'sort_direction' => $currentSort['by'] == 'tanggal_resep' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1">
+                            Tanggal
+                            @if($currentSort['by'] == 'tanggal_resep')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
                     <th class="py-3 px-4 font-bold">Pasien</th>
                     <th class="py-3 px-4 font-bold">Dokter</th>
-                    <th class="py-3 px-4 font-bold text-right">Total Nilai</th>
+                    <th class="py-3 px-4 font-bold text-right">
+                        <a href="{{ route('resep.index', array_merge(request()->query(), ['sort_by' => 'total_harga', 'sort_direction' => $currentSort['by'] == 'total_harga' && $currentSort['direction'] == 'asc' ? 'desc' : 'asc'])) }}" class="hover:text-primary transition inline-flex items-center gap-1 justify-end w-full">
+                            Total Nilai
+                            @if($currentSort['by'] == 'total_harga')
+                                <span class="text-xs">{{ $currentSort['direction'] == 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </a>
+                    </th>
                     <th class="py-3 px-4 font-bold text-center">Aksi</th>
                 </tr>
             </thead>

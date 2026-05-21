@@ -49,7 +49,7 @@ class ObatController extends Controller
             'kode_obat' => 'required|unique:obat,kode_obat,'.$id.',id_obat',
             'nama_obat' => 'required|string|max:100',
             'kategori'  => 'required|string|max:50',
-            'stok'      => 'required|integer|min:0',
+            'stok'      => 'required|numeric|min:0',
             'harga'     => 'required|numeric|min:0',
         ]);
 
